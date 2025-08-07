@@ -1,0 +1,32 @@
+name = "magpic"
+main = "./.cloudflare/worker.js"
+compatibility_date = "2025-01-07"
+
+# Static Assets設定
+assets = { directory = "./.cloudflare/public", binding = "ASSETS" }
+
+# KVネームスペース（必要に応じて）
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "your-kv-namespace-id"
+
+# 環境変数（必要に応じて）
+# [vars]
+# MY_VARIABLE = "production value"
+
+# プレビュー環境設定（PR用）
+[env.preview]
+name = "magpic-preview"
+
+# ルーティング設定
+# route = { pattern = "example.com/*", zone_name = "example.com" }
+
+# 開発環境設定
+[env.development]
+name = "magpic-dev"
+# vars = { MY_VARIABLE = "development value" }
+
+# 本番環境設定
+[env.production]
+name = "magpic"
+# vars = { MY_VARIABLE = "production value" }
