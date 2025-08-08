@@ -27,6 +27,8 @@
 	let breadcrumbs: Folder[] = [];
 	let currentParentId: string | undefined = undefined;
 	let authenticated = false;
+	let showAllFiles = false;
+	let allFilesData: any = null;
 
 	onMount(async () => {
 		// Check authentication
@@ -143,6 +145,27 @@
 		if (!dateStr) return 'Unknown date';
 		return new Date(dateStr).toLocaleDateString();
 	}
+
+	async function loadAllFiles() {
+		loading = true;
+		error = null;
+		showAllFiles = true;
+		
+		try {
+			const response = await fetch('/api/drive/all-files');
+			
+			if (!response.ok) {
+				throw new Error('Failed to load all files');
+			}
+			
+			allFilesData = await response.json();
+		} catch (err) {
+			error = 'Failed to load all files. Please check your permissions.';
+			console.error(err);
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <div class="min-h-screen bg-gray-50">
@@ -150,7 +173,15 @@
 		<div class="bg-white rounded-lg shadow-md p-6">
 			<div class="flex items-center justify-between mb-6">
 				<h1 class="text-2xl font-bold text-gray-900">Google Drive Explorer</h1>
-				<a href="/" class="text-blue-500 hover:underline">← Back to Home</a>
+				<div class="flex items-center space-x-4">
+					<button 
+						on:click={loadAllFiles}
+						class="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+					>
+						Debug: Show All Files
+					</button>
+					<a href="/" class="text-blue-500 hover:underline">← Back to Home</a>
+				</div>
 			</div>
 
 			<!-- Breadcrumbs -->
@@ -181,13 +212,64 @@
 				<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
 					{error}
 				</div>
+			{:else if showAllFiles && allFilesData}
+				<!-- Debug View: All Files -->
+				<div class="space-y-4">
+					<button 
+						on:click={() => { showAllFiles = false; loadFolders(); }}
+						class="text-blue-500 hover:underline"
+					>
+						← Back to Normal View
+					</button>
+					
+					<div class="border rounded-lg p-4">
+						<h3 class="font-semibold mb-2">Summary</h3>
+						<p class="text-sm text-gray-600">Total items: {allFilesData.total}</p>
+						<p class="text-sm text-gray-600">Folders: {allFilesData.folders?.length || 0}</p>
+						<p class="text-sm text-gray-600">Images: {allFilesData.images?.length || 0}</p>
+					</div>
+					
+					<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+						<div class="border rounded-lg p-4">
+							<h3 class="font-semibold mb-2">All Folders</h3>
+							{#if allFilesData.folders?.length > 0}
+								<div class="space-y-1 max-h-64 overflow-y-auto">
+									{#each allFilesData.folders as folder}
+										<div class="text-sm p-1 hover:bg-gray-100 rounded">
+											📁 {folder.name}
+											<span class="text-xs text-gray-500 ml-2">ID: {folder.id.substring(0, 8)}...</span>
+										</div>
+									{/each}
+								</div>
+							{:else}
+								<p class="text-sm text-gray-500">No folders in your Drive</p>
+							{/if}
+						</div>
+						
+						<div class="border rounded-lg p-4">
+							<h3 class="font-semibold mb-2">All Images</h3>
+							{#if allFilesData.images?.length > 0}
+								<div class="space-y-1 max-h-64 overflow-y-auto">
+									{#each allFilesData.images as image}
+										<div class="text-sm p-1 hover:bg-gray-100 rounded">
+											🖼️ {image.name}
+											<span class="text-xs text-gray-500 ml-2">{formatFileSize(image.size)}</span>
+										</div>
+									{/each}
+								</div>
+							{:else}
+								<p class="text-sm text-gray-500">No images in your Drive</p>
+							{/if}
+						</div>
+					</div>
+				</div>
 			{:else}
 				<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 					<!-- Folders Column -->
 					<div class="border rounded-lg p-4">
 						<h2 class="text-lg font-semibold mb-3">Folders</h2>
 						{#if folders.length === 0}
-							<p class="text-gray-500 text-sm">No folders in this location</p>
+							<p class="text-gray-500 text-sm">No folders found. Try creating a folder in your Google Drive first.</p>
 						{:else}
 							<div class="space-y-2 max-h-96 overflow-y-auto">
 								{#each folders as folder}

@@ -79,9 +79,12 @@ export class GoogleDriveClient {
 	async listFolders(parentId?: string): Promise<any> {
 		const accessToken = await this.getAccessToken();
 		
-		let query = "mimeType='application/vnd.google-apps.folder' and trashed=false";
+		let query: string;
 		if (parentId) {
-			query = `'${parentId}' in parents and ${query}`;
+			query = `'${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+		} else {
+			// ルートフォルダの場合は'root'を親として指定
+			query = "'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
 		}
 
 		const response = await fetch(
@@ -89,6 +92,7 @@ export class GoogleDriveClient {
 				q: query,
 				fields: 'files(id,name,mimeType,parents)',
 				orderBy: 'name',
+				pageSize: '100', // 最大100件取得
 			})}`,
 			{
 				headers: {
@@ -98,6 +102,8 @@ export class GoogleDriveClient {
 		);
 
 		if (!response.ok) {
+			const errorData = await response.text();
+			console.error('Drive API error:', errorData);
 			throw new Error('Failed to list folders');
 		}
 
