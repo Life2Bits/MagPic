@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	server: {
+		port: 5273
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

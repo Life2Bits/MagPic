@@ -48,5 +48,10 @@
 		"vitest": "^3.2.3",
 		"vitest-browser-svelte": "^0.1.0",
 		"wrangler": "^4.28.0"
+	},
+	"dependencies": {
+		"@types/jsonwebtoken": "^9.0.10",
+		"jsonwebtoken": "^9.0.2",
+		"simple-oauth2": "^5.1.0"
 	}
 }

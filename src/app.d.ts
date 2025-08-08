@@ -6,7 +6,14 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env?: {
+				GOOGLE_CLIENT_ID: string;
+				GOOGLE_CLIENT_SECRET: string;
+				SESSION_SECRET: string;
+				TOKENS: KVNamespace;
+			};
+		}
 	}
 }
 
