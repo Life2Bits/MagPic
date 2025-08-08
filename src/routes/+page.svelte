@@ -42,13 +42,26 @@
 			<div class="text-center">
 				<img src={user.picture} alt={user.name} class="w-16 h-16 rounded-full mx-auto mb-4">
 				<h2 class="text-xl font-semibold text-gray-900 mb-1">Hello, {user.name}!</h2>
-				<p class="text-gray-600 mb-4">{user.email}</p>
-				<button 
-					on:click={logout}
-					class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
-				>
-					Logout
-				</button>
+				<p class="text-gray-600 mb-6">{user.email}</p>
+				
+				<div class="space-y-3">
+					<a 
+						href="/drive"
+						class="block w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+					>
+						<svg class="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+							<path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+						</svg>
+						Browse Google Drive
+					</a>
+					
+					<button 
+						on:click={logout}
+						class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+					>
+						Logout
+					</button>
+				</div>
 			</div>
 		{:else}
 			<div class="text-center">
